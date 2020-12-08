@@ -1,5 +1,5 @@
 ```
-usage: xdt [-h] [-s SOURCE] [-d DESTINATION] -t TRANSFORM
+usage: xdtransform [-h] [-s SOURCE] [-d DESTINATION] -t TRANSFORM
 
 optional arguments:
   -h, --help            show this help message and exit
