@@ -42,6 +42,15 @@ def remove_attribs(e, attribs):
     return e
 
 
+def copy_element(se: lxml.etree.Element) -> lxml.etree.Element:
+    result = lxml.etree.Element(se.tag, remove_xdt_attribs(se), None)
+    result.tail = se.tail
+    result.text = se.text
+    for child in se:
+        result.append(child)
+    return result
+
+
 locator_types = {
     "Match": locator_match,
     "Condition": None,
@@ -49,14 +58,14 @@ locator_types = {
 
 }
 transform_types = {
-    "Replace": lambda v, te, se: se.getparent().replace(se, remove_xdt_attribs(deepcopy(te))),
-    "Insert": lambda v, te, se: se.getparent().append(remove_xdt_attribs(deepcopy(te))),
-    "InsertBefore": lambda v, te, se: se.addprevious(remove_xdt_attribs(deepcopy(te))),
-    "InsertAfter": lambda v, te, se: se.addnext(remove_xdt_attribs(deepcopy(te))),
+    "Replace": lambda v, te, se: se.getparent().replace(se, copy_element(te)),
+    "Insert": lambda v, te, se: se.getparent().append(copy_element(te)),
+    "InsertBefore": lambda v, te, se: se.addprevious(copy_element(te)),
+    "InsertAfter": lambda v, te, se: se.addnext(copy_element(te)),
     "Remove": lambda v, te, se: se.getparent().remove(se),
     "RemoveAll": lambda v, te, se: se.getparent().remove(se),
     "RemoveAttributes": lambda v, te, se: remove_attribs(se, v.split(",")),
-    "SetAttributes": lambda v, te, se: se.attrib.update(remove_xdt_attribs(deepcopy(te)).attrib),
+    "SetAttributes": lambda v, te, se: se.attrib.update(copy_element(te).attrib),
 }
 
 
