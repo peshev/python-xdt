@@ -43,13 +43,16 @@ def remove_attribs(e, attribs):
     return e
 
 
-def copy_element(se: lxml.etree.Element) -> lxml.etree.Element:
-    result = lxml.etree.Element(se.tag, remove_xdt_attribs(se), None)
-    result.tail = se.tail
-    result.text = se.text
-    for child in se:
-        result.append(copy_element(child))
-    return result
+def copy_element(from_element: lxml.etree.Element) -> lxml.etree.Element:
+    to_element = lxml.etree.Element(
+        from_element.tag,
+        {k: v for k, v in from_element.attrib.items() if k not in xdt_attribs},
+        None)
+    to_element.tail = from_element.tail
+    to_element.text = from_element.text
+    for child in from_element:
+        to_element.append(copy_element(child))
+    return to_element
 
 
 locator_types = {
