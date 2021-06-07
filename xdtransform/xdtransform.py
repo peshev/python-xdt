@@ -48,7 +48,7 @@ def copy_element(se: lxml.etree.Element) -> lxml.etree.Element:
     result.tail = se.tail
     result.text = se.text
     for child in se:
-        result.append(child)
+        result.append(copy_element(child))
     return result
 
 
@@ -96,7 +96,7 @@ def transform_elements(transform_parent, source_parent):
                 else:
                     changed |= transform_elements(te, se)
         if not found:
-            se = remove_xdt_attribs(deepcopy(te))
+            se = copy_element(te)
             source_parent.append(se)
             transform_elements(te, se)
             changed |= True
