@@ -74,6 +74,7 @@ def is_element(node):
 
 
 def transform_elements(transform_parent, source_parent):
+    changed = False
     for te in transform_parent:
         if not is_element(te):
             continue
@@ -88,15 +89,17 @@ def transform_elements(transform_parent, source_parent):
                 if transform_qname in te.attrib:
                     _transform = attr_regex.match(te.attrib[transform_qname]).groupdict()
                     transform_types[_transform["type"]](_transform["value"], te, se)
+                    changed |= True
                     if _transform["type"] == "Remove":
                         break
                 else:
-                    transform_elements(te, se)
+                    changed |= transform_elements(te, se)
         if not found:
             se = remove_xdt_attribs(deepcopy(te))
             source_parent.append(se)
             transform_elements(te, se)
-    return source_parent
+            changed |= True
+    return changed
 
 
 def file(f, mode="rb"):
@@ -109,12 +112,14 @@ def file(f, mode="rb"):
 
 def transform(source_file, transform_file, target_file):
     source_tree = lxml.etree.parse(file(source_file))
-    transform_elements(
+    changed = transform_elements(
         lxml.etree.parse(file(transform_file)).getroot(),
         source_tree.getroot())
-    source_tree.write(
-        target_file,
-        encoding="utf-8",
-        pretty_print=True,
-        xml_declaration=True
-    )
+    if changed:
+        source_tree.write(
+            target_file,
+            encoding="utf-8",
+            pretty_print=True,
+            xml_declaration=True
+        )
+    return changed
