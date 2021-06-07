@@ -38,7 +38,8 @@ def remove_xdt_attribs(e):
 
 def remove_attribs(e, attribs):
     for a in attribs:
-        del e.attrib[a]
+        if a in e.attrib:
+            del e.attrib[a]
     return e
 
 
