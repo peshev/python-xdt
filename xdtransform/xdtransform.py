@@ -57,9 +57,8 @@ def copy_element(from_element: lxml.etree.Element) -> lxml.etree.Element:
 
 locator_types = {
     "Match": locator_match,
-    "Condition": None,
-    "XPath": None,
-
+    "Condition": locator_condition,
+    "XPath": locator_xpath,
 }
 transform_types = {
     "Replace": lambda v, te, se: se.getparent().replace(se, copy_element(te)),
@@ -82,13 +81,12 @@ def transform_elements(transform_parent, source_parent):
     for te in transform_parent:
         if not is_element(te):
             continue
-        locator = attr_regex.match(te.attrib[locator_qname]).groupdict() if locator_qname in te.attrib else None
+        locator = attr_regex.match(te.attrib[locator_qname]).groupdict() if locator_qname in te.attrib else {}
         locator_fn = locator_types[locator["type"]](locator["value"], te) if locator else lambda x: True
+        source_elements = locator_fn(source_parent) if locator.get("type") == "XPath" else source_parent
         found = False
-        for se in locator_fn(None) if locator and locator["type"] == "XPath" else source_parent:
-            if not is_element(se):
-                continue
-            if te.tag == se.tag and locator_fn(se):
+        for se in source_elements:
+            if is_element(se) and ((te.tag == se.tag and locator_fn(se)) or locator.get("type") == "XPath"):
                 found = True
                 if transform_qname in te.attrib:
                     _transform = attr_regex.match(te.attrib[transform_qname]).groupdict()
