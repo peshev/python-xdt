@@ -1,6 +1,5 @@
 import lxml.etree
 import re
-from copy import deepcopy
 
 xdt_ns = "http://schemas.microsoft.com/XML-Document-Transform"
 locator_qname = lxml.etree.QName(xdt_ns, "Locator")
