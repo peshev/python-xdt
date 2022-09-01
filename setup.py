@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="xdtransform",
-    version="0.0.1",
+    version="0.0.2",
     author="Peter Peshev",
     author_email="peshev@gmail.com",
     description="Library implementing the Microsoft XML Document Transform (XDT) transformation process",
