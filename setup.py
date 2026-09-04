@@ -4,14 +4,14 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="xdtransform",
+    name="xdt",
     version="0.0.2",
     author="Peter Peshev",
     author_email="peshev@gmail.com",
     description="Library implementing the Microsoft XML Document Transform (XDT) transformation process",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/peshev/python-xdtransform",
+    url="https://github.com/peshev/python-xdt",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -21,6 +21,6 @@ setuptools.setup(
         "lxml"
     ],
     scripts=[
-        'scripts/xdtransform'
+        'scripts/xdt'
     ]
 )
