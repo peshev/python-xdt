@@ -20,6 +20,11 @@ setuptools.setup(
     install_requires=[
         "lxml"
     ],
+    extras_require={
+        "ansible": [
+            "ansible-core>=2.18",
+        ],
+    },
     scripts=[
         'scripts/xdt'
     ]
