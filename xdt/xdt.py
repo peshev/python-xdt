@@ -91,7 +91,7 @@ def transform_elements(transform_parent, source_parent):
                     _transform = attr_regex.match(te.attrib[transform_qname]).groupdict()
                     transform_types[_transform["type"]](_transform["value"], te, se)
                     changed |= True
-                    if _transform["type"] == "Remove":
+                    if _transform["type"] in ["Remove", "Insert"]:
                         break
                 else:
                     changed |= transform_elements(te, se)
@@ -115,7 +115,7 @@ def file(f, mode="rb"):
 
 def render_template(source):
     from ansible.parsing.dataloader import DataLoader
-    from ansible.template import Templar
+    from ansible.template import Templar, trust_as_template
     import os
     templar = Templar(
         loader=DataLoader(),
@@ -123,7 +123,10 @@ def render_template(source):
             "env": os.environ,
         },
     )
-    return templar.template(source.read())
+    source_content = source.read()
+    if isinstance(source_content, bytes):
+        source_content = source_content.decode("utf-8")
+    return templar.template(trust_as_template(source_content))
 
 
 def transform(source_file, transform_file, target_file, jinja_render=False):
