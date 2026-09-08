@@ -13,10 +13,14 @@ parser.add_argument("-d", "--destination", default="-",
                     help="The destination XML file (you can specify - to mean stdout)")
 parser.add_argument("-t", "--transform", required=True,
                     help="The transformation XML file")
+parser.add_argument("-j", "--jinja", required=False, default=False,
+                    action="store_true",
+                    help="Render transformation XML file as a Jinja2 template before transformation")
 if __name__ == '__main__':
     args = parser.parse_args()
     xdt.transform(
         os.fdopen(sys.stdin.fileno(), 'rb') if args.source == "-" else args.source,
         args.transform,
         os.fdopen(sys.stdout.fileno(), 'wb') if args.destination == "-" else args.destination,
+        args.jinja
     )

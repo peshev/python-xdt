@@ -105,16 +105,36 @@ def transform_elements(transform_parent, source_parent):
 
 def file(f, mode="rb"):
     try:
+        # Check if it's a file-like object (duck typing - has .read() method)
         _ = f.read
         return f
     except AttributeError:
+        # Otherwise we treat it as a file path (let open() handle it)
         return open(f, mode)
 
 
-def transform(source_file, transform_file, target_file):
+def render_template(source):
+    from ansible.parsing.dataloader import DataLoader
+    from ansible.template import Templar
+    import os
+    templar = Templar(
+        loader=DataLoader(),
+        variables={
+            "env": os.environ,
+        },
+    )
+    return templar.template(source.read())
+
+
+def transform(source_file, transform_file, target_file, jinja_render=False):
     source_tree = lxml.etree.parse(file(source_file))
+    transform_source = file(transform_file)
+    if jinja_render:
+        transform_doc = lxml.etree.fromstring(render_template(transform_source))
+    else:
+        transform_doc = lxml.etree.parse(transform_source)
     changed = transform_elements(
-        lxml.etree.parse(file(transform_file)).getroot(),
+        transform_doc,
         source_tree.getroot())
     if changed:
         source_tree.write(
